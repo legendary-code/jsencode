@@ -178,7 +178,7 @@ export class JSEncoder {
 
         let length = Number(lengthString);
 
-        if (isNaN(length) || length < 0) {
+        if (Math.floor(length) !== length || length < 0) {
             throw lengthString + " is not a valid length value for string";
         }
 
