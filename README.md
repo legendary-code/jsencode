@@ -23,22 +23,22 @@ encoder.decode("<3:Foo>"); // returns Foo() instance
 `any := <string> | <number> | <boolean> | <dictionary> | <object> | <array> | <null>`
 
 #### Null
-`null := n`
+`null := 'n'`
 
 #### String
 `string := <length>:<value>`
 
-`length = integer >= 0`
+`length = any valid Number value that is an integer >= 0`
 
 `value = any utf-8 encoded string value`
 
 #### Number
 `number := '(' <value> ')'`
 
-`value = any valid number value`
+`value = any valid Number value`
 
 #### Boolean
-`boolean := t | f`
+`boolean := 't' | 'f'`
 
 #### Array
 `array := '[' <values> ']'`
