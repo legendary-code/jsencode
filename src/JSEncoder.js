@@ -142,7 +142,7 @@ export default class JSEncoder {
 
         switch (stream.peek()) {
             case "n":
-                return this._decodeNull();
+                return this._decodeNull(stream);
 
             case "(":
                 return this._decodeNumber(stream);
@@ -164,7 +164,8 @@ export default class JSEncoder {
         return this._decodeString(stream);
     }
 
-    _decodeNull() {
+    _decodeNull(stream) {
+        stream.expect("n")
         return null;
     }
 

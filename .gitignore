@@ -28,6 +28,7 @@ node_modules
 
 # IntelliJ / WebStorm
 .idea
+*.iml
 
 # generated index.js file
 index.js
