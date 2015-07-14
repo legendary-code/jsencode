@@ -1,4 +1,4 @@
-export class DecodeStream {
+export default class DecodeStream {
     constructor(text) {
         this._text = text;
         this._index = 0;

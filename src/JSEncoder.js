@@ -1,6 +1,6 @@
-import { DecodeStream } from './DecodeStream';
+import DecodeStream from './DecodeStream';
 
-export class JSEncoder {
+export default class JSEncoder {
     constructor(opts) {
         this._types = {};
 

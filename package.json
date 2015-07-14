@@ -4,8 +4,8 @@
   "description": "An extended implementation of Bencode for encoding typed JavaScript objects",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "browserify --transform babelify --transform uglifyify src/index.js  --outfile index.js"
+    "test": "npm install && mocha",
+      "preinstall": "browserify --standalone JSEncode --transform babelify --transform uglifyify src/JSEncoder.js  --outfile index.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,8 @@
   "devDependencies": {
     "babelify": "^6.1.3",
     "browserify": "^10.2.6",
+    "chai": "^3.0.0",
+    "mocha": "^2.2.5",
     "uglifyify": "^3.0.1"
   }
 }
