@@ -1,6 +1,22 @@
 # jsencode
 An implementation for encoding typed JavaScript objects, similar to BEncode
 
+### Example
+
+```javascript
+var JSEncoder = require('jsencode');
+var Foo = require('foo');
+var encoder = new JSEncoder({types:[Foo]});  // or, encoder.registerTypes(Foo, Bar, ...);
+
+encoder.encode("foo"); // returns "3:foo"
+encoder.encode({foo: "bar"}); // returns "{3:foo3:bar}"
+encoder.encode(new Foo()); // returns "<3:Foo>"
+
+encoder.decode("3:foo"); // returns "foo"
+encoder.decode("{3:foo3:bar}"); // returns {foo: "bar"}
+encoder.decode("<3:Foo>"); // returns Foo() instance
+```
+
 ### Encoding
 
 #### Any
