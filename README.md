@@ -26,7 +26,7 @@ encoder.decode("<3:Foo>"); // returns Foo() instance
 `null := 'n'`
 
 #### String
-`string := <length>:<value>`
+`string := <length> ':' <value>`
 
 `length = any valid Number value that is an integer >= 0`
 
@@ -53,7 +53,7 @@ encoder.decode("<3:Foo>"); // returns Foo() instance
 `string-value-pair := <string><any>`
 
 #### Object (Object with registered constructor Function)
-`object := '<' <ype><string-value-pairs> '>'`
+`object := '<' <type><string-value-pairs> '>'`
 
 `type := <string>`
 
