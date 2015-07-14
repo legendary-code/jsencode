@@ -30,14 +30,14 @@ An implementation for encoding typed JavaScript objects, similar to BEncode
 `values := (<any>)*`
 
 #### Dictionary (Object with constructor Object)
-`'{' <string-value-pairs> '}'`
+`dictionary := '{' <string-value-pairs> '}'`
 
 `string-value-pairs := (string-value-pair)*`
 
 `string-value-pair := <string><any>`
 
-#### Object (Object with registered constructor function)
-`'<' <ype><string-value-pairs> '>'`
+#### Object (Object with registered constructor Function)
+`object := '<' <ype><string-value-pairs> '>'`
 
 `type := <string>`
 
