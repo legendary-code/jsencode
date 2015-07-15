@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm install && mocha",
-      "preinstall": "browserify --standalone JSEncode --transform babelify --transform uglifyify src/JSEncoder.js  --outfile index.js"
+    "prepublish": "browserify --standalone JSEncode --transform babelify --transform uglifyify src/JSEncoder.js  --outfile index.js"
   },
   "repository": {
     "type": "git",
