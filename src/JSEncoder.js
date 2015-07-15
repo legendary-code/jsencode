@@ -40,7 +40,8 @@ export default class JSEncoder {
             return this._guessTypeName(value);
         }
 
-        return value.constructor.name || null;
+        // coerce empty string to null
+        return typeName || null;
     }
 
     // This is to support IE 9+, which doesn't support constructor.name
