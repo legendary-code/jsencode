@@ -1,7 +1,7 @@
 {
   "name": "jsencode",
-  "version": "1.0.0",
-  "description": "An extended implementation of Bencode for encoding typed JavaScript objects",
+  "version": "1.0.1",
+  "description": "An implementation for encoding typed JavaScript objects, similar to BEncode",
   "main": "index.js",
   "scripts": {
     "test": "npm install && mocha",
