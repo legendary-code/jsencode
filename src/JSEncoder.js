@@ -106,6 +106,10 @@ export default class JSEncoder {
             case Boolean:
             case Array:
             case Object:
+                return true;
+
+            case Function:
+                return false;
         }
 
         return value.constructor.constructor === Function;
@@ -131,6 +135,9 @@ export default class JSEncoder {
 
             case Object:
                 return this._encodeDictionary(value);
+
+            case Function:
+                throw "cannot encode Function";
         }
 
         if (value.constructor.constructor === Function) {
@@ -160,6 +167,9 @@ export default class JSEncoder {
         let encoded = "[";
 
         for (let value of values) {
+            if (!this._canEncode(value)) {
+                continue;
+            }
             encoded += this._encodeAny(value);
         }
 
@@ -170,7 +180,7 @@ export default class JSEncoder {
         let encoded = "{";
 
         for (let key in value) {
-            if (value.hasOwnProperty(key)) {
+            if (value.hasOwnProperty(key) && this._canEncode(value[key])) {
                 encoded += this._encodeString(key);
                 encoded += this._encodeAny(value[key]);
             }

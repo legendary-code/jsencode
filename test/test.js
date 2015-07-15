@@ -89,6 +89,22 @@ describe("JSEncoder", function() {
                 encoder.encode(new Anonymous());
             }).to.throw();
         });
+
+        it("should not encode function directly", function() {
+            var func = function() {};
+            expect(function() {
+                encoder.encode(func);
+            }).to.throw();
+        });
+
+        it("should not encode functions", function() {
+            var func = function() {};
+            var foo = {
+                bar: func
+            };
+            expect(encoder.encode(foo)).to.equal("{}");
+            expect(encoder.encode([func])).to.equal("[]");
+        });
     });
 
     describe("decoding", function() {

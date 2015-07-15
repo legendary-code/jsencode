@@ -1,6 +1,6 @@
 {
   "name": "jsencode",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An implementation for encoding typed JavaScript objects, similar to BEncode",
   "main": "index.js",
   "scripts": {
