@@ -1,4 +1,6 @@
 # jsencode
+![Build status](https://travis-ci.org/legendary-code/jsencode.svg?branch=master)
+
 An implementation for encoding typed JavaScript objects, similar to BEncode
 
 ### Example
