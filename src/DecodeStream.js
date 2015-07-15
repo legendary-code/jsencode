@@ -28,14 +28,18 @@ export default class DecodeStream {
     }
 
     expectEof() {
-        if (this._index < this._text.length) {
+        if (!this.isEof()) {
             throw "expected end of input";
         }
     }
 
     expectNotEof() {
-        if (this._index >= this._text.length) {
+        if (this.isEof()) {
             throw "unexpected end of input";
         }
+    }
+
+    isEof() {
+        return this._index >= this._text.length;
     }
 }

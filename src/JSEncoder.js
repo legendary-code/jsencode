@@ -33,6 +33,23 @@ export default class JSEncoder {
         return this._encodeAny(value);
     }
 
+    _getTypeName(value) {
+        let typeName = value.constructor.name;
+
+        if (typeName === undefined) {
+            return this._guessTypeName(value);
+        }
+
+        return value.constructor.name || null;
+    }
+
+    // This is to support IE 9+, which doesn't support constructor.name
+    _guessTypeName(value) {
+        let regex = /function\s([^(]{1,})\(/;
+        let results = regex.exec(value.constructor.toString());
+        return (results && results.length > 1) ? results[1].trim() : null;
+    }
+
     _canEncode(value) {
         if (value == null) {
             return true;
@@ -118,7 +135,13 @@ export default class JSEncoder {
     }
 
     _encodeObject(value) {
-        let encoded = "<" + this._encodeString(value.constructor.name);
+        let typeName = this._getTypeName(value);
+
+        if (!typeName) {
+            throw "could not determine type for value " + value;
+        }
+
+        let encoded = "<" + this._encodeString(typeName);
 
         for (let key in value) {
             if (value.hasOwnProperty(key) && this._canEncode(value[key])) {
@@ -165,7 +188,7 @@ export default class JSEncoder {
     }
 
     _decodeNull(stream) {
-        stream.expect("n")
+        stream.expect("n");
         return null;
     }
 
@@ -173,7 +196,7 @@ export default class JSEncoder {
         let lengthString = "";
         let value = "";
 
-        while (stream.peek() != ":") {
+        while (!stream.isEof() && this._isNumber(stream.peek())) {
             lengthString += stream.next();
         }
 
@@ -196,7 +219,7 @@ export default class JSEncoder {
     _decodeNumber(stream) {
         let value = "";
         stream.expect("(");
-        while (stream.peek() != ")") {
+        while (!stream.isEof() && stream.peek() != ")") {
             value += stream.next();
         }
         stream.expect(")");
@@ -223,7 +246,7 @@ export default class JSEncoder {
         let value = [];
 
         stream.expect("[");
-        while (stream.peek() != "]") {
+        while (!stream.isEof() && stream.peek() != "]") {
             value.push(this._decodeAny(stream));
         }
         stream.expect("]");
@@ -235,7 +258,7 @@ export default class JSEncoder {
         let value = {};
 
         stream.expect("{");
-        while (stream.peek() != "}") {
+        while (!stream.isEof() && stream.peek() != "}") {
             let key = this._decodeString(stream);
             value[key] = this._decodeAny(stream);
         }
@@ -256,12 +279,16 @@ export default class JSEncoder {
         let TValue = this._types[typeString];
         let value = new TValue();
 
-        while (stream.peek() != ">") {
+        while (!stream.isEof() && stream.peek() != ">") {
             let key = this._decodeString(stream);
             value[key] = this._decodeAny(stream);
         }
         stream.expect(">");
 
         return value;
+    }
+
+    _isNumber(char) {
+        return !isNaN(Number(char));
     }
 }
