@@ -53,7 +53,7 @@ encoder.decode("<3:Foo>"); // returns Foo() instance
 `string-value-pair := <string><any>`
 
 #### Object (Object with registered constructor Function)
-`object := '<' <type><string-value-pairs> '>'`
+`object := '<' <type> <string-value-pairs> '>'`
 
 `type := <string>`
 
