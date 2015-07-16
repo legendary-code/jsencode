@@ -84,6 +84,24 @@ describe("JSEncoder", function() {
             expect(encoder.encode(foo)).to.equal("<3:Foo>");
         });
 
+        it("should be able to register type when constructor.name is not supported", function() {
+            var foo = {
+                // make it look like a custom type
+                constructor: Function,
+                toString: function() {
+                    return "function Foo() {}";
+                }
+            };
+
+            new JSEncoder({types: [foo]});
+        });
+
+        it("should not be able to register anonymous type", function() {
+            expect(function(){
+                new JSEncoder({types: [function(){}]});
+            }).to.throw();
+        });
+
         it("should not encode anonymous objects", function() {
             expect(function(){
                 encoder.encode(new Anonymous());

@@ -63,7 +63,11 @@ export default class JSEncoder {
                 throw "type" + type + " must be a Function";
             }
 
-            let name = type.name;
+            let name = this._getTypeName(type);
+
+            if (!name) {
+                throw "anonymous type cannot be registered";
+            }
 
             if (this._types.hasOwnProperty(name)) {
                 throw "type " + name + " already registered";
@@ -77,11 +81,11 @@ export default class JSEncoder {
         return this._encodeAny(value);
     }
 
-    _getTypeName(value) {
-        let typeName = value.constructor.name;
+    _getTypeName(ctor) {
+        let typeName = ctor.name;
 
         if (typeName === undefined) {
-            return this._guessTypeName(value);
+            return this._guessTypeName(ctor);
         }
 
         // coerce empty string to null
@@ -89,9 +93,9 @@ export default class JSEncoder {
     }
 
     // This is to support IE 9+, which doesn't support constructor.name
-    _guessTypeName(value) {
+    _guessTypeName(ctor) {
         let regex = /function\s([^(]{1,})\(/;
-        let results = regex.exec(value.constructor.toString());
+        let results = regex.exec(ctor.toString());
         return (results && results.length > 1) ? results[1].trim() : null;
     }
 
@@ -190,7 +194,7 @@ export default class JSEncoder {
     }
 
     _encodeObject(value) {
-        let typeName = this._getTypeName(value);
+        let typeName = this._getTypeName(value.constructor);
 
         if (!typeName) {
             throw "could not determine type for value " + value;
