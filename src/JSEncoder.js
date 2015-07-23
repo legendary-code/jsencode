@@ -47,6 +47,7 @@ class DecodeStream {
 export default class JSEncoder {
     constructor(opts) {
         this._types = {};
+        this._includePrivateFields = false;
 
         if (!opts) {
             return;
@@ -55,6 +56,8 @@ export default class JSEncoder {
         if (opts.types) {
             this.registerTypes(...opts.types);
         }
+
+        this._includePrivateFields = !!opts.includePrivateFields;
     }
 
     registerTypes(...types) {
@@ -203,13 +206,37 @@ export default class JSEncoder {
         let encoded = "<" + this._encodeString(typeName);
 
         for (let key in value) {
-            if (value.hasOwnProperty(key) && this._canEncode(value[key])) {
+            if (!value.hasOwnProperty(key)) {
+                continue;
+            }
+
+            if (this._shouldEncodeField(value, key)) {
                 encoded += this._encodeString(key);
                 encoded += this._encodeAny(value[key]);
             }
         }
 
         return encoded + ">";
+    }
+
+    _allowedFieldName(name) {
+        if (!name || name.constructor !== String) {
+            return false;
+        }
+
+        if (name.indexOf("_") == 0) {
+            return this._includePrivateFields;
+        }
+
+        return true;
+    }
+
+    _shouldEncodeField(value, name) {
+        if (!this._canEncode(value[name])) {
+            return false;
+        }
+
+        return this._allowedFieldName(name);
     }
 
     decode(value) {
@@ -340,7 +367,13 @@ export default class JSEncoder {
 
         while (!stream.isEof() && stream.peek() != ">") {
             let key = this._decodeString(stream);
-            value[key] = this._decodeAny(stream);
+            let decodedValue = this._decodeAny(stream);
+
+            if (!this._allowedFieldName(key)) {
+                continue;
+            }
+
+            value[key] = decodedValue;
         }
         stream.expect(">");
 

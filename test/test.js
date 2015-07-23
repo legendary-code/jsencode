@@ -5,6 +5,7 @@ describe("JSEncoder", function() {
 
     function Foo() {
         this.value = "bar";
+        this._value = "baz";
     }
 
     function Empty() {
@@ -19,6 +20,26 @@ describe("JSEncoder", function() {
 
     var encoder = new JSEncoder({types: [ Foo ]});
     encoder.registerTypes(Empty);
+
+    describe("configuration", function() {
+        it("should be able to register type when constructor.name is not supported", function() {
+            var foo = {
+                // make it look like a custom type
+                constructor: Function,
+                toString: function() {
+                    return "function Foo() {}";
+                }
+            };
+
+            new JSEncoder({types: [foo]});
+        });
+
+        it("should not be able to register anonymous type", function() {
+            expect(function(){
+                new JSEncoder({types: [function(){}]});
+            }).to.throw();
+        });
+    });
 
     describe("encoding", function() {
 
@@ -54,6 +75,7 @@ describe("JSEncoder", function() {
             expect(encoder.encode({foo: 123})).to.equal("{3:foo(123)}");
             expect(encoder.encode({foo: true})).to.equal("{3:foot}");
             expect(encoder.encode({foo: [123]})).to.equal("{3:foo[(123)]}");
+            expect(encoder.encode({_foo: 123})).to.equal("{4:_foo(123)}")
         });
 
         it("should encode objects", function() {
@@ -63,43 +85,6 @@ describe("JSEncoder", function() {
 
         it("should encode objects whose type is not registered", function() {
             expect(encoder.encode(new Unregistered())).to.equal("<12:Unregistered>");
-        });
-
-        it("should be able to determine type when constructor.name is not supported", function() {
-            var foo = {};
-
-            Object.defineProperty(foo, 'constructor', {
-                get: function() {
-                    return {
-                        // make it look like a custom type
-                        constructor: Function,
-                        toString: function() {
-                            return "function Foo() {}";
-                        }
-                    };
-                }
-            });
-
-            expect(foo.constructor.name).to.equal(undefined);
-            expect(encoder.encode(foo)).to.equal("<3:Foo>");
-        });
-
-        it("should be able to register type when constructor.name is not supported", function() {
-            var foo = {
-                // make it look like a custom type
-                constructor: Function,
-                toString: function() {
-                    return "function Foo() {}";
-                }
-            };
-
-            new JSEncoder({types: [foo]});
-        });
-
-        it("should not be able to register anonymous type", function() {
-            expect(function(){
-                new JSEncoder({types: [function(){}]});
-            }).to.throw();
         });
 
         it("should not encode anonymous objects", function() {
@@ -159,11 +144,12 @@ describe("JSEncoder", function() {
             expect(encoder.decode("{3:foo(123)}")).to.deep.equal({foo: 123});
             expect(encoder.decode("{3:foot}")).to.deep.equal({foo: true});
             expect(encoder.decode("{3:foo[(123)]}")).to.deep.equal({foo: [123]});
+            expect(encoder.decode("{4:_foo(123)}")).to.deep.equal({_foo: 123});
         });
 
         it("should decode objects", function() {
             var empty = encoder.decode("<5:Empty>");
-            var foo = encoder.decode("<3:Foo5:value3:bar>");
+            var foo = encoder.decode("<3:Foo5:value3:bar6:_value3:qux>");
 
             expect(empty).to.deep.equal(new Empty());
             expect(empty.constructor.name).to.equal("Empty");
@@ -228,6 +214,27 @@ describe("JSEncoder", function() {
             expect(function() {
                 encoder.decode("<3:Foo");
             }).to.throw();
+        });
+    });
+
+    describe("polyfill", function() {
+        it("should be able to determine type when constructor.name is not supported", function() {
+            var foo = {};
+
+            Object.defineProperty(foo, 'constructor', {
+                get: function() {
+                    return {
+                        // make it look like a custom type
+                        constructor: Function,
+                        toString: function() {
+                            return "function Foo() {}";
+                        }
+                    };
+                }
+            });
+
+            expect(foo.constructor.name).to.equal(undefined);
+            expect(encoder.encode(foo)).to.equal("<3:Foo>");
         });
     });
 });
