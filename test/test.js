@@ -17,6 +17,9 @@ describe("JSEncoder", function() {
     function WithProperty() {
     }
 
+    function WithPropertyNoSetter() {
+    }
+
     var Anonymous = function() {
 
     };
@@ -95,6 +98,9 @@ describe("JSEncoder", function() {
                     enumerable: false,
                     get: function() {
                         return this.firstName + ' ' + this.lastName;
+                    },
+                    set: function(val) {
+                        throw "not implemented";
                     }
                 }
             );
@@ -102,14 +108,33 @@ describe("JSEncoder", function() {
             expect(encoder.encode(person)).to.equal("{9:firstName4:Gene8:lastName4:Trog8:fullName9:Gene Trog}");
         });
 
+        it("should not encode property on dictionary with getter and without setter", function(){
+            var value = { };
+            Object.defineProperty(
+                value,
+                'value',
+                {
+                    enumerable: false,
+                    get: function() {
+                        return this.firstName + ' ' + this.lastName;
+                    }
+                }
+            );
+
+            expect(encoder.encode(value)).to.equal("{}");
+        });
+
         it("should encode properties in objects defined by Object.defineProperty", function() {
             Object.defineProperty(
                 WithProperty.prototype,
                 'value',
                 {
-                    enumerable: true,
+                    enumerable: false,
                     get: function() {
                         return "foo";
+                    },
+                    set: function(val) {
+                        throw "not implemented";
                     }
                 }
             );
@@ -117,6 +142,23 @@ describe("JSEncoder", function() {
             var instance = new WithProperty();
             expect(instance.value).to.equal("foo");
             expect(encoder.encode(instance)).to.equal("<12:WithProperty5:value3:foo>");
+        });
+
+        it("should not encode property on object with getter and without setter", function(){
+            Object.defineProperty(
+                WithPropertyNoSetter.prototype,
+                'value',
+                {
+                    enumerable: false,
+                    get: function() {
+                        return "foo";
+                    }
+                }
+            );
+
+            var instance = new WithPropertyNoSetter();
+            expect(instance.value).to.equal("foo");
+            expect(encoder.encode(instance)).to.equal("<20:WithPropertyNoSetter>");
         });
 
         it("should encode objects whose type is not registered", function() {

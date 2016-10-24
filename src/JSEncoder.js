@@ -102,6 +102,12 @@ export default class JSEncoder {
         return (results && results.length > 1) ? results[1].trim() : null;
     }
 
+    _hasSetter(value, name) {
+        // does this property have a setter?
+        let descriptor = Object.getOwnPropertyDescriptor(value, name);
+        return !descriptor.get || descriptor.set;
+    }
+
     _getPropertyNames(value) {
         // Object.getOwnPropertyNames not supported
         if (!Object || !Object.getOwnPropertyNames) {
@@ -126,6 +132,10 @@ export default class JSEncoder {
                     continue;
                 }
 
+                if (!this._hasSetter(value, name)) {
+                    continue;
+                }
+
                 propertyNames.push(name);
             }
 
@@ -139,11 +149,19 @@ export default class JSEncoder {
                 continue;
             }
 
+            if (!this._hasSetter(value, name)) {
+                continue;
+            }
+
             propertyNamesSet[name] = true;
         }
 
         for (let name of Object.getOwnPropertyNames(proto)) {
             if (!proto.hasOwnProperty(name)) {
+                continue;
+            }
+
+            if (!this._hasSetter(proto, name)) {
                 continue;
             }
 
