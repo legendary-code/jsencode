@@ -49,6 +49,10 @@ describe("JSEncoder", function() {
 
     describe("encoding", function() {
 
+        it("should encode undefined", function() {
+            expect(encoder.encode(undefined)).to.equal("u");
+        });
+
         it("should encode null", function() {
             expect(encoder.encode(null)).to.equal("n");
         });
@@ -189,6 +193,10 @@ describe("JSEncoder", function() {
     });
 
     describe("decoding", function() {
+
+        it("should decode undefined", function() {
+            expect(encoder.decode("u")).to.equal(undefined);
+        });
 
         it("should decode null", function() {
             expect(encoder.decode("n")).to.equal(null);

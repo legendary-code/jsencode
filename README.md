@@ -24,6 +24,9 @@ encoder.decode("<3:Foo>"); // returns Foo() instance
 #### Any
 `any := <string> | <number> | <boolean> | <dictionary> | <object> | <array> | <null>`
 
+#### Undefined
+`undefined := 'u'`
+
 #### Null
 `null := 'n'`
 

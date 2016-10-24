@@ -181,7 +181,7 @@ export default class JSEncoder {
     }
 
     _canEncode(value) {
-        if (value == null) {
+        if (value === undefined || value == null) {
             return true;
         }
 
@@ -201,6 +201,10 @@ export default class JSEncoder {
     }
 
     _encodeAny(value) {
+        if (value === undefined) {
+            return this._encodeUndefined();
+        }
+
         if (value === null) {
             return this._encodeNull();
         }
@@ -230,6 +234,10 @@ export default class JSEncoder {
         }
 
         throw "unable to encode unsupported type " + value.constructor.name;
+    }
+
+    _encodeUndefined() {
+        return "u";
     }
 
     _encodeNull() {
@@ -326,6 +334,9 @@ export default class JSEncoder {
         stream.expectNotEof();
 
         switch (stream.peek()) {
+            case "u":
+                return this._decodeUndefined(stream);
+
             case "n":
                 return this._decodeNull(stream);
 
@@ -347,6 +358,11 @@ export default class JSEncoder {
         }
 
         return this._decodeString(stream);
+    }
+
+    _decodeUndefined(stream) {
+        stream.expect("u");
+        return undefined;
     }
 
     _decodeNull(stream) {
