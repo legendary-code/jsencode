@@ -17,7 +17,7 @@
     "encode"
   ],
   "author": "eternal0 <gene.trog@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/legendary-code/jsencode/issues"
   },
