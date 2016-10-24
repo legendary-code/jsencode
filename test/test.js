@@ -14,6 +14,9 @@ describe("JSEncoder", function() {
     function Unregistered() {
     }
 
+    function WithProperty() {
+    }
+
     var Anonymous = function() {
 
     };
@@ -81,6 +84,39 @@ describe("JSEncoder", function() {
         it("should encode objects", function() {
             expect(encoder.encode(new Empty())).to.equal("<5:Empty>");
             expect(encoder.encode(new Foo())).to.equal("<3:Foo5:value3:bar>");
+        });
+
+        it("should encode properties in dictionaries defined by Object.defineProperty", function() {
+            var person = { firstName: 'Gene', lastName: 'Trog' };
+            Object.defineProperty(
+                person,
+                'fullName',
+                {
+                    enumerable: false,
+                    get: function() {
+                        return this.firstName + ' ' + this.lastName;
+                    }
+                }
+            );
+
+            expect(encoder.encode(person)).to.equal("{9:firstName4:Gene8:lastName4:Trog8:fullName9:Gene Trog}");
+        });
+
+        it("should encode properties in objects defined by Object.defineProperty", function() {
+            Object.defineProperty(
+                WithProperty.prototype,
+                'value',
+                {
+                    enumerable: true,
+                    get: function() {
+                        return "foo";
+                    }
+                }
+            );
+
+            var instance = new WithProperty();
+            expect(instance.value).to.equal("foo");
+            expect(encoder.encode(instance)).to.equal("<12:WithProperty5:value3:foo>");
         });
 
         it("should encode objects whose type is not registered", function() {

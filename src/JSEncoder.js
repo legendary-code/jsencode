@@ -102,6 +102,66 @@ export default class JSEncoder {
         return (results && results.length > 1) ? results[1].trim() : null;
     }
 
+    _getPropertyNames(value) {
+        // Object.getOwnPropertyNames not supported
+        if (!Object || !Object.getOwnPropertyNames) {
+            let propertyNames = [];
+            for (let name in value) {
+                if (!value.hasOwnProperty(name)) {
+                    continue;
+                }
+
+                propertyNames.push(name);
+            }
+
+            return propertyNames;
+        }
+
+        // Dictionary or no prototype, only get direct property names
+        let proto = value.constructor.prototype;
+        if (value.constructor === Object || !proto) {
+            let propertyNames = [];
+            for (let name of Object.getOwnPropertyNames(value)) {
+                if (!value.hasOwnProperty(name)) {
+                    continue;
+                }
+
+                propertyNames.push(name);
+            }
+
+            return propertyNames;
+        }
+
+        // Object, get direct property names and prototype property names
+        let propertyNamesSet = {};
+        for (let name of Object.getOwnPropertyNames(value)) {
+            if (!value.hasOwnProperty(name)) {
+                continue;
+            }
+
+            propertyNamesSet[name] = true;
+        }
+
+        for (let name of Object.getOwnPropertyNames(proto)) {
+            if (!proto.hasOwnProperty(name)) {
+                continue;
+            }
+
+            propertyNamesSet[name] = true;
+        }
+
+        let propertyNames = [];
+        for (let name in propertyNamesSet) {
+            if (!propertyNamesSet.hasOwnProperty(name)) {
+                continue;
+            }
+
+            propertyNames.push(name);
+        }
+
+        return propertyNames;
+    }
+
     _canEncode(value) {
         if (value == null) {
             return true;
@@ -186,11 +246,12 @@ export default class JSEncoder {
     _encodeDictionary(value) {
         let encoded = "{";
 
-        for (let key in value) {
-            if (value.hasOwnProperty(key) && this._canEncode(value[key])) {
-                encoded += this._encodeString(key);
-                encoded += this._encodeAny(value[key]);
+        for (let key of this._getPropertyNames(value)) {
+            if (!this._canEncode(value[key])) {
+                continue;
             }
+            encoded += this._encodeString(key);
+            encoded += this._encodeAny(value[key]);
         }
 
         return encoded + "}";
@@ -200,20 +261,17 @@ export default class JSEncoder {
         let typeName = this._getTypeName(value.constructor);
 
         if (!typeName) {
-            throw "could not determine type for value " + value;
+            throw "could not determine type for constructor: " + value.constructor + ", value: " + JSON.stringify(value);
         }
 
         let encoded = "<" + this._encodeString(typeName);
 
-        for (let key in value) {
-            if (!value.hasOwnProperty(key)) {
+        for (let key of this._getPropertyNames(value)) {
+            if (!this._shouldEncodeField(value, key)) {
                 continue;
             }
-
-            if (this._shouldEncodeField(value, key)) {
-                encoded += this._encodeString(key);
-                encoded += this._encodeAny(value[key]);
-            }
+            encoded += this._encodeString(key);
+            encoded += this._encodeAny(value[key]);
         }
 
         return encoded + ">";
