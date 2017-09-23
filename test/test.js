@@ -169,10 +169,8 @@ describe("JSEncoder", function() {
             expect(encoder.encode(new Unregistered())).to.equal("<12:Unregistered>");
         });
 
-        it("should not encode anonymous objects", function() {
-            expect(function(){
-                encoder.encode(new Anonymous());
-            }).to.throw();
+        it("should encode anonymous objects", function() {
+            expect(encoder.encode(new Anonymous())).to.equal("<9:Anonymous>");
         });
 
         it("should not encode function directly", function() {
@@ -248,6 +246,11 @@ describe("JSEncoder", function() {
             expect(function() {
                 encoder.decode("<12:Unregistered>");
             }).to.throw();
+        });
+
+        it("should ignore decoding unregistered types if option is set", function() {
+            encoder = new JSEncoder({ignoreUnregisteredTypes: true});
+            expect(encoder.decode("<12:Unregistered>")).to.deep.equal({});
         });
 
         it("should not decode extra input", function() {

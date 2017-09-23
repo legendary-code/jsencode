@@ -19,6 +19,11 @@ encoder.decode("{3:foo3:bar}"); // returns {foo: "bar"}
 encoder.decode("<3:Foo>"); // returns Foo() instance
 ```
 
+### Options
+`types` - specify a list of type constructors to register for deserializing Objects
+`includePrivateFields` - allows exclusion of fields that start with '_'
+`ignoreUnregisteredTypes` - ignore unregistered types, deserializing it as a dictionary instead
+
 ### Encoding
 
 #### Any

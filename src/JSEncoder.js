@@ -48,6 +48,7 @@ export default class JSEncoder {
     constructor(opts) {
         this._types = {};
         this._includePrivateFields = false;
+        this._ignoreUnregisteredTypes = false;
 
         if (!opts) {
             return;
@@ -58,6 +59,7 @@ export default class JSEncoder {
         }
 
         this._includePrivateFields = !!opts.includePrivateFields;
+        this._ignoreUnregisteredTypes = !!opts.ignoreUnregisteredTypes;
     }
 
     registerTypes(...types) {
@@ -308,7 +310,7 @@ export default class JSEncoder {
             return false;
         }
 
-        if (name.indexOf("_") == 0) {
+        if (name.indexOf("_") === 0) {
             return this._includePrivateFields;
         }
 
@@ -450,14 +452,14 @@ export default class JSEncoder {
 
         let typeString = this._decodeString(stream);
 
-        if (!this._types.hasOwnProperty(typeString)) {
+        if (!this._types.hasOwnProperty(typeString) && !this._ignoreUnregisteredTypes) {
             throw typeString + " is not a known registered type";
         }
 
         let TValue = this._types[typeString];
-        let value = new TValue();
+        let value = TValue ? new TValue() : {};
 
-        while (!stream.isEof() && stream.peek() != ">") {
+        while (!stream.isEof() && stream.peek() !== ">") {
             let key = this._decodeString(stream);
             let decodedValue = this._decodeAny(stream);
 
