@@ -451,9 +451,14 @@ export default class JSEncoder {
         stream.expect("<");
 
         let typeString = this._decodeString(stream);
+        let ignoreValue = false;
 
-        if (!this._types.hasOwnProperty(typeString) && !this._ignoreUnregisteredTypes) {
-            throw typeString + " is not a known registered type";
+        if (!this._types.hasOwnProperty(typeString)) {
+            if (!this._ignoreUnregisteredTypes) {
+                throw typeString + " is not a known registered type";
+            }
+
+            ignoreValue = true;
         }
 
         let TValue = this._types[typeString];
@@ -471,7 +476,7 @@ export default class JSEncoder {
         }
         stream.expect(">");
 
-        return value;
+        return ignoreValue ? null : value;
     }
 
     _isNumber(char) {

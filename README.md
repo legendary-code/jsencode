@@ -24,7 +24,7 @@ encoder.decode("<3:Foo>"); // returns Foo() instance
 
 `includePrivateFields` - allows exclusion of fields that start with '_'
 
-`ignoreUnregisteredTypes` - ignore unregistered types, deserializing it as a dictionary instead
+`ignoreUnregisteredTypes` - ignore unregistered types, deserializing it as a null value instead
 
 ### Encoding
 

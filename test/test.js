@@ -250,7 +250,7 @@ describe("JSEncoder", function() {
 
         it("should ignore decoding unregistered types if option is set", function() {
             encoder = new JSEncoder({ignoreUnregisteredTypes: true});
-            expect(encoder.decode("<12:Unregistered>")).to.deep.equal({});
+            expect(encoder.decode("<12:Unregistered>")).to.deep.equal(null);
         });
 
         it("should not decode extra input", function() {
