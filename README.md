@@ -1,5 +1,5 @@
 # jsencode
-![build](https://github.com/legendary-code/jsencode/workflows/build/badge.svg?branch=master) [![npm version](https://badge.fury.io/js/jsencode.svg)](http://badge.fury.io/js/jsencode)
+![build](https://github.com/legendary-code/jsencode/workflows/build/badge.svg) [![npm version](https://badge.fury.io/js/jsencode.svg)](http://badge.fury.io/js/jsencode)
 
 An implementation for encoding typed JavaScript objects, similar to BEncode
 
